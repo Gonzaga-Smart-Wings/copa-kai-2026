@@ -1,0 +1,76 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+@TeleOp(name="TeleOp: Conduccion Gonzaga Modular", group="Robot")
+public class RobotTeleOp_PS4 extends LinearOpMode {
+
+    OmniRobot robot = new OmniRobot();
+    private ElapsedTime runtime = new ElapsedTime();
+    
+    static final double UMBRAL_ZONA_MUERTA = 0.05; 
+    static final double COMPENSACION_DERECHA = 1.18;
+    private boolean yaVibroPorDisparo = false;
+
+    @Override
+    public void runOpMode() {
+        robot.init(hardwareMap);
+
+        telemetry.addData("Status", "TELEOP MODULAR INICIALIZADO");
+        telemetry.update();
+
+        waitForStart();
+        runtime.reset();
+
+        while (opModeIsActive()) {
+
+            double marcha = gamepad1.left_stick_y; 
+            double giro   = -gamepad1.left_stick_x;  
+
+            if (Math.abs(marcha) < UMBRAL_ZONA_MUERTA) marcha = 0.0;
+            if (Math.abs(giro) < UMBRAL_ZONA_MUERTA)   giro = 0.0;
+
+            robot.chasis.conducirArcade(marcha, giro, COMPENSACION_DERECHA);
+
+            if (gamepad1.right_trigger > 0.2) {
+                robot.lanzador.encenderMotor(-1.0); 
+                
+                if (!yaVibroPorDisparo) {
+                    if (!gamepad1.isRumbling()) {
+                        gamepad1.rumbleBlips(2); 
+                    }
+                    yaVibroPorDisparo = true; 
+                }
+            } else {
+                robot.lanzador.apagarMotor(); 
+                yaVibroPorDisparo = false; 
+            }
+
+            if (gamepad1.right_bumper) { 
+                robot.lanzador.lanzarPelota();
+            } else if (gamepad1.left_bumper) { 
+                robot.lanzador.retraerCompuertas();
+            }
+
+            telemetry.addLine("=== CONTROL GONZAGA MODULAR ===");
+            telemetry.addData("Voltaje de Batería", "%.2f V", getBatteryVoltage());
+            telemetry.addData("Potencia M1 (Izq)", "%.0f%%", robot.chasis.getM1().getPower() * 100);
+            telemetry.addData("Potencia M2 (Der)", "%.0f%%", robot.chasis.getM2().getPower() * 100);
+            telemetry.update();
+
+            sleep(10); 
+        }
+    }
+
+    double getBatteryVoltage() {
+        double result = Double.POSITIVE_INFINITY;
+        for (VoltageSensor sensor : hardwareMap.voltageSensor) {
+            double voltage = sensor.getVoltage();
+            if (voltage > 0) result = Math.min(result, voltage);
+        }
+        return result;
+    }
+}
