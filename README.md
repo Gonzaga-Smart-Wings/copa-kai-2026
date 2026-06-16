@@ -1,36 +1,36 @@
-# 🚀 Gonzaga Smart Wing - Temporada 2026
+# 🚀 Gonzaga Smart Wing - ¡Bienvenidos a nuestro código! 
 
-¡Bienvenidos al repositorio oficial de desarrollo de software de **Gonzaga Smart Wing**, equipo de robótica del **Colegio Gonzaga**! 
-
-Este repositorio contiene la arquitectura de software diseñada e implementada para competir en la **Copa Ka'i** y la plataforma **FIRST Tech Challenge (FTC)**. Nuestro enfoque para esta temporada se basa en la modularidad, la legibilidad y la precisión cinemática mediante el uso de programación orientada a objetos en Java.
+¡Hola! Este es el repositorio oficial de **Gonzaga Smart Wing**, el equipo de robótica del **Colegio Gonzaga**. Aquí guardamos todo el código en Java que hemos desarrollado para el robot de esta temporada de la **Copa Ka'i** y **FTC**. 
 
 ---
 
-## 🛠️ Estructura del Software (Arquitectura Modular)
+## 🛠️ ¿Cómo organizamos nuestro código? (Nuestra Arquitectura)
 
-A diferencia de los scripts planos tradicionales, hemos abstraído el hardware del robot en subsistemas independientes coordinados por una clase maestra. Esto permite realizar reparaciones rápidas en pits y mantener modos de juego sumamente limpios.
+Al principio teníamos todo el código amontonado en archivos gigantes, lo que hacía que configurar los motores en el TeleOp y en el Autónomo fuera un dolor de cabeza (¡y muy peligroso si algo fallaba en los pits!). 
 
-### 📦 Módulos de Hardware (Not an OpModes)
-* **`ChasisMec.java`**: Controla el tren motriz diferencial. Absorbe las inversiones lógicas de los motores traccionados cara a cara, el algoritmo de control en pista (*Arcade Drive*) y las matemáticas de conversión para los encoders.
-* **`LanzadorMec.java`**: Gestiona el motor de tiro de alta velocidad (`m3`) y la sincronización secuencial de los servos encargados de las compuertas del disparador.
-* **`OmniRobot.java`**: El "maestro de hardware". Unifica los objetos del chasis y del lanzador en una sola entidad cohesiva para que los programas de competencia interactúen con un único punto de acceso.
+Para solucionarlo, decidimos ordenar los archivos y dividir el robot en módulos independientes. Ahora, los programas de competencia no buscan motores sueltos, sino que hablan directamente con un "coordinador maestro" (`OmniRobot`).
 
-### 🎮 Modos de Juego (OpModes de Competencia)
-* **`RobotTeleOp_PS4.java` (Teleoperado)**: Permite el control manual del robot durante el período de juego conducido. Cuenta con suavizado de zonas muertas en los joysticks, compensación de tracción lineal y retroalimentación háptica (*Rumble*) en el mando para alertar al operador durante el ciclo de tiro.
-* **`RobotAutoDriveByEncoder_Linear.java` (Autónomo)**: Ejecuta de forma 100% automatizada la estrategia inicial de la ronda: salida limpia de la zona de inicio, posicionamiento cinemático mediante conteo de pulsos relativos por encoder (`RUN_TO_POSITION`), vaciado secuencial de las 3 pelotas en el objetivo y retorno lineal a la zona segura.
+### 📦 El Hardware por separado (Not an OpModes)
+* **`ChasisMec.java`**: Aquí está guardado todo lo que tiene que ver con mover el robot. Este archivo se encarga de invertir el motor que va al revés, controlar el manejo con el joystick (*Arcade Drive*) y hacer los cálculos matemáticos para que los encoders midan en centímetros reales.
+* **`LanzadorMec.java`**: Este módulo controla exclusivamente nuestro sistema de disparo. Sabe en qué puertos están el motor `m3` y los dos servos de las compuertas, y tiene las funciones exactas para encender el motor y abrir o retraer los servos al lanzar.
+* **`OmniRobot.java`**: Es el "capitán" del robot. Une al chasis y al lanzador en un solo bloque para que los códigos de la pista sean mucho más limpios y fáciles de leer.
+
+### 🎮 Los Modos de Juego (OpModes de Competencia)
+* **`RobotTeleOp_PS4.java` (Modo Conducido)**: El programa para manejar el robot en la pista con el control. Le añadimos una zona muerta a los joysticks para evitar movimientos fantasma, ajustamos una compensación para que el robot avance recto y configuramos una vibración en el control que le avisa al piloto cuando el motor de tiro está listo.
+* **`RobotAutoDriveByEncoder_Linear.java` (Modo Autónomo)**: Nuestra estrategia automática de 30 segundos. El robot arranca, avanza exactamente 65 cm usando los encoders, enciende el motor de tiro, abre y cierra las compuertas tres veces de forma secuencial para soltar las 3 pelotas, y finalmente retrocede para quedarse en zona segura.
 
 ---
 
-## 📈 Especificaciones de Hardware Controladas
-* **Control Central**: REV Robotics Control Hub.
+## 📈 Ficha Técnica de Nuestro Robot
+* **Controlador**: REV Robotics Control Hub.
 * **Motores de Tracción**: goBILDA Yellow Jacket 19.2:1 (537.7 pulsos por revolución).
-* **Ruedas**: Diámetro de 9.6 cm (Configuración diferencial de dos ruedas).
-* **Actuadores de Tiro**: Motor directo para RPM máximas y dos servos de posición angular para las compuertas de retención.
+* **Ruedas**: Diámetro de 9.6 cm.
+* **Sistema de Disparo (motores de disparo)**: Un motor directo para máximas RPM y dos servos para controlar las compuertas de retención.
 
 ---
 
-## 👨‍💻 Desarrollo y Mentoría
+## 👨‍💻 Sobre Nosotros
 
-Este proyecto es el resultado del esfuerzo, diseño de algoritmos y pruebas en pista realizadas por los estudiantes de bachillerato (3er y 4to año) del equipo de robótica, bajo la coordinación de la dirección de Informática del **Colegio Gonzaga**.
+Este algoritmo fue diseñado, programado y probado en la pista por nosotros, los estudiantes de 3er y 4to año de bachillerato del **Colegio Gonzaga**, con el apoyo y la guía de nuestra profesora de Informática. 
 
-> *"La excelencia no es un acto, es un hábito. Estructurando código para ganar, diseñando el futuro de la robótica educativa."*
+Escribir el código de esta manera nos tomó más tiempo y esfuerzo, pero nos demostró que podemos programar como ingenieros reales. ¡Nos vemos en la pista!
